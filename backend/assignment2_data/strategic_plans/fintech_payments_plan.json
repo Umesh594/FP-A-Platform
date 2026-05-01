@@ -1,0 +1,38 @@
+{
+  "company": "fintech_payments",
+  "plan_horizon": "2026-2028",
+  "strategic_targets": {
+    "2026": {
+      "revenue": 160994400.0,
+      "ebitda_margin": 0.18,
+      "arr": 112696080.0,
+      "net_revenue_retention": 1.12
+    },
+    "2027": {
+      "revenue": 270470592.0,
+      "ebitda_margin": 0.195,
+      "arr": 189329414.4,
+      "net_revenue_retention": 1.135
+    },
+    "2028": {
+      "revenue": 454390594.56,
+      "ebitda_margin": 0.21,
+      "arr": 318073416.19,
+      "net_revenue_retention": 1.15
+    }
+  },
+  "key_initiatives": [
+    {
+      "name": "Enterprise Tier Launch",
+      "timeline": "Q2 2026",
+      "revenue_impact": 5600000.0,
+      "investment_required": 1400000.0
+    },
+    {
+      "name": "International Expansion",
+      "timeline": "Q1 2027",
+      "revenue_impact": 7000000.0,
+      "investment_required": 2240000.0
+    }
+  ]
+}

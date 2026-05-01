@@ -1,0 +1,38 @@
+{
+  "company": "cloudcrm_inc",
+  "plan_horizon": "2026-2028",
+  "strategic_targets": {
+    "2026": {
+      "revenue": 100079000.0,
+      "ebitda_margin": 0.15,
+      "arr": 100079000.0,
+      "net_revenue_retention": 1.15
+    },
+    "2027": {
+      "revenue": 136107440.0,
+      "ebitda_margin": 0.17,
+      "arr": 136107440.0,
+      "net_revenue_retention": 1.17
+    },
+    "2028": {
+      "revenue": 185106118.4,
+      "ebitda_margin": 0.19,
+      "arr": 185106118.4,
+      "net_revenue_retention": 1.19
+    }
+  },
+  "key_initiatives": [
+    {
+      "name": "Enterprise Tier Launch",
+      "timeline": "Q2 2026",
+      "revenue_impact": 7000000.0,
+      "investment_required": 1750000.0
+    },
+    {
+      "name": "International Expansion",
+      "timeline": "Q1 2027",
+      "revenue_impact": 8750000.0,
+      "investment_required": 2800000.0
+    }
+  ]
+}

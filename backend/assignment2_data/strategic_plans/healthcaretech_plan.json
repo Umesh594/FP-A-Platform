@@ -1,0 +1,38 @@
+{
+  "company": "healthcaretech",
+  "plan_horizon": "2026-2028",
+  "strategic_targets": {
+    "2026": {
+      "revenue": 103125000.0,
+      "ebitda_margin": 0.18,
+      "arr": 72187500.0,
+      "net_revenue_retention": 1.12
+    },
+    "2027": {
+      "revenue": 123750000.0,
+      "ebitda_margin": 0.195,
+      "arr": 86625000.0,
+      "net_revenue_retention": 1.135
+    },
+    "2028": {
+      "revenue": 148500000.0,
+      "ebitda_margin": 0.21,
+      "arr": 103950000.0,
+      "net_revenue_retention": 1.15
+    }
+  },
+  "key_initiatives": [
+    {
+      "name": "Enterprise Tier Launch",
+      "timeline": "Q2 2026",
+      "revenue_impact": 11000000.0,
+      "investment_required": 2750000.0
+    },
+    {
+      "name": "International Expansion",
+      "timeline": "Q1 2027",
+      "revenue_impact": 13750000.0,
+      "investment_required": 4400000.0
+    }
+  ]
+}

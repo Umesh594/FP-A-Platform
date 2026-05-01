@@ -1,0 +1,32 @@
+{
+  "company": "manufacturetech_co",
+  "plan_horizon": "2026-2028",
+  "strategic_targets": {
+    "2026": {
+      "revenue": 117899712.0,
+      "ebitda_margin": 0.14
+    },
+    "2027": {
+      "revenue": 125445293.57,
+      "ebitda_margin": 0.15
+    },
+    "2028": {
+      "revenue": 133473792.36,
+      "ebitda_margin": 0.16
+    }
+  },
+  "key_initiatives": [
+    {
+      "name": "Enterprise Tier Launch",
+      "timeline": "Q2 2026",
+      "revenue_impact": 19000000.0,
+      "investment_required": 4750000.0
+    },
+    {
+      "name": "International Expansion",
+      "timeline": "Q1 2027",
+      "revenue_impact": 23750000.0,
+      "investment_required": 7600000.0
+    }
+  ]
+}
