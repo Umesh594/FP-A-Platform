@@ -59,3 +59,7 @@ Thumbs.db
 *.zip
 *.tar
 *.gz
+backend/.env.example
+backend/.env
+.env
+.env.*
