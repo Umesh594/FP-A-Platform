@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import Base, engine, init_timescaledb
+from app.database import init_database
 from app.api import companies, financials, kpis, reports, initiatives, variances, drivers, emails, orchestrator, portfolio, scenarios
 from app.websocket.manager import router as websocket_router
 from app.tasks.scheduler import start_scheduler
@@ -51,8 +51,7 @@ def health_check():
 @app.on_event("startup")
 async def startup():
     try:
-        Base.metadata.create_all(bind=engine)
-        init_timescaledb()
+        init_database()
     except Exception as e:
         logger.exception(f"Database initialization failed: {e}")
         raise
