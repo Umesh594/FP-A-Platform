@@ -12,7 +12,9 @@ __pycache__/
 .env
 backend/.env
 frontend/.env
-
+echo .env >> .gitignore
+echo .env.* >> .gitignore
+echo !.env.example >> .gitignore
 # Python
 __pycache__/
 *.py[cod]
