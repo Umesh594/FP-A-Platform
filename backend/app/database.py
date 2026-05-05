@@ -36,6 +36,8 @@ def init_timescaledb(conn=None):
 
 
 def init_database():
+    import app.models  # noqa: F401
+
     lock_id = 7282026
     with engine.connect() as conn:
         conn.execute(text("SELECT pg_advisory_lock(:lock_id)"), {"lock_id": lock_id})

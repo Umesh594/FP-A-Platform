@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_database
-from app.api import companies, financials, kpis, reports, initiatives, variances, drivers, emails, orchestrator, portfolio, scenarios
+from app.api import agents, auth, companies, financials, kpis, reports, initiatives, variances, drivers, emails, orchestrator, portfolio, scenarios
 from app.websocket.manager import router as websocket_router
 from app.tasks.scheduler import start_scheduler
 from app.config import settings
@@ -41,6 +41,8 @@ app.include_router(websocket_router)
 app.include_router(scenarios.router)
 app.include_router(orchestrator.router)
 app.include_router(portfolio.router)
+app.include_router(agents.router)
+app.include_router(auth.router)
 
 
 @app.get("/health", tags=["health"])

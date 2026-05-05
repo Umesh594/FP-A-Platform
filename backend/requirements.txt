@@ -19,3 +19,5 @@ reportlab
 apscheduler
 groq
 numpy_financial
+xgboost
+locust

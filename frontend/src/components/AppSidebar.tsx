@@ -8,6 +8,8 @@ import {
   Sun,
   Moon,
   Activity,
+  BrainCircuit,
+  ShieldCheck,
   Wifi,
   WifiOff,
   ChevronLeft,
@@ -45,6 +47,8 @@ export function AppSidebar() {
   { title: "Scenario Builder", url: "/scenarios", icon: GitBranch },
   { title: "KPI Scorecard", url: "/kpis", icon: BarChart3 },
   { title: "Reports & Exports", url: "/reports", icon: FileText },
+  { title: "Agent Intelligence", url: "/agents", icon: BrainCircuit },
+  { title: "Admin / RBAC", url: "/admin", icon: ShieldCheck },
   { title: "Email Center", url: "/emails", icon: Mail },
 ];
 

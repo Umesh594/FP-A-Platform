@@ -4,6 +4,8 @@ from app.agents.orchestrator_agent import StrategicOrchestrator
 from app.dependencies import get_db
 from app.services.financial_service import generate_financial_forecast, get_financial_history
 from app.services.dataset_loader import load_financial_csv, resolve_company_ids_from_csv
+from app.ml import train_xgboost_style_forecast
+from app.models.financials import FinancialMetric
 from app.utils.json_sanitize import sanitize_for_json
 import tempfile
 import os
@@ -19,6 +21,28 @@ def financial_history(company_id: int, db: Session = Depends(get_db)):
 @router.get("/{company_id}/forecast")
 async def financial_forecast(company_id: int, db: Session = Depends(get_db)):
     return await generate_financial_forecast(company_id, db)
+
+
+@router.get("/{company_id}/ml-forecast")
+def ml_financial_forecast(company_id: int, target: str = "revenue", db: Session = Depends(get_db)):
+    rows = (
+        db.query(FinancialMetric)
+        .filter(FinancialMetric.company_id == company_id)
+        .order_by(FinancialMetric.period)
+        .all()
+    )
+    payload = [
+        {
+            "company_id": row.company_id,
+            "period": row.period,
+            "revenue": row.revenue,
+            "cogs": row.cogs,
+            "gross_profit": row.gross_profit,
+            "ebitda": row.ebitda,
+        }
+        for row in rows
+    ]
+    return train_xgboost_style_forecast(payload, company_id=company_id, target=target)
 
 
 @router.post("/upload-financials")

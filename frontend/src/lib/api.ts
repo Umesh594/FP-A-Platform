@@ -76,6 +76,71 @@ export interface ApiScenarioResponse {
   >;
 }
 
+export interface AgentRunSummary {
+  run_id: string;
+  company_id: number;
+  request_type: string;
+  status: string;
+  latency_ms: number;
+  created_at: string;
+  final_output?: Record<string, unknown>;
+}
+
+export interface AgentTrace {
+  id: number;
+  agent_name: string;
+  step_type: string;
+  thought: string;
+  tool_name?: string;
+  tool_input?: Record<string, unknown>;
+  tool_output?: Record<string, unknown>;
+  decision?: string;
+  latency_ms: number;
+  tokens_used: number;
+  cost_usd: number;
+  success: boolean;
+  created_at: string;
+}
+
+export interface AgentEval {
+  metric_name: string;
+  score: number;
+  passed: boolean;
+  details?: Record<string, unknown>;
+}
+
+export interface AgentRunDetail {
+  run: AgentRunSummary;
+  traces: AgentTrace[];
+  reflections: Array<{
+    agent_name: string;
+    critique: string;
+    confidence_score: number;
+    revised_output?: Record<string, unknown>;
+  }>;
+  evals: AgentEval[];
+}
+
+export interface Recommendation {
+  id: number;
+  company_id: number;
+  recommendation_type: string;
+  title: string;
+  reasoning: string;
+  confidence_score: number;
+  expected_impact: string;
+  status: string;
+  created_at: string;
+}
+
+export interface DataSource {
+  id: number;
+  name: string;
+  source_type: string;
+  status: string;
+  last_sync_at?: string | null;
+}
+
 export interface EmailPayload {
   to_email: string;
   subject: string;
@@ -154,6 +219,81 @@ export const api = {
     `/scenarios/?base_revenue=${encodeURIComponent(baseRevenue)}&base_expense=${encodeURIComponent(baseExpense)}`
   );
 },
+
+  async runAgentCycle(companyId: number) {
+    return fetchJson<AgentRunSummary>("/agents/run-cycle", {
+      method: "POST",
+      body: JSON.stringify({ company_id: companyId, request_type: "planning_cycle" }),
+    });
+  },
+
+  async getAgentRuns() {
+    return fetchJson<AgentRunSummary[]>("/agents/runs");
+  },
+
+  async getAgentRun(runId: string) {
+    return fetchJson<AgentRunDetail>(`/agents/runs/${encodeURIComponent(runId)}`);
+  },
+
+  async getObservabilitySummary() {
+    return fetchJson<Record<string, number>>("/agents/observability/summary");
+  },
+
+  async getRecommendations() {
+    return fetchJson<Recommendation[]>("/agents/recommendations");
+  },
+
+  async getDataSources() {
+    return fetchJson<DataSource[]>("/agents/data-sources");
+  },
+
+  async runPipeline(sourceId?: number) {
+    const suffix = sourceId ? `?source_id=${sourceId}` : "";
+    return fetchJson<Record<string, unknown>>(`/agents/pipelines/run${suffix}`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
+  async testDataSource(sourceId: number) {
+    return fetchJson<Record<string, unknown>>(`/agents/data-sources/${sourceId}/test`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
+  async syncDataSource(sourceId: number) {
+    return fetchJson<Record<string, unknown>>(`/agents/data-sources/${sourceId}/sync`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
+  async getMcpServer() {
+    return fetchJson<Record<string, unknown>>("/agents/mcp");
+  },
+
+  async getAuthRoles() {
+    return fetchJson<Array<{ role: string; permissions: string[] }>>("/auth/roles");
+  },
+
+  async runEvals(runId: string) {
+    return fetchJson<AgentEval[]>(`/agents/evals/${encodeURIComponent(runId)}`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
+  async executeSecureTool(toolName: string, companyId: number) {
+    return fetchJson<Record<string, unknown>>("/agents/tools/execute", {
+      method: "POST",
+      body: JSON.stringify({
+        tool_name: toolName,
+        role: "Admin",
+        tool_input: { company_id: companyId, user_id: "demo-user" },
+      }),
+    });
+  },
 
   async sendEmail(payload: EmailPayload) {
     return fetchJson<{ status: string }>("/emails/send", {
