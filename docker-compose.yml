@@ -75,5 +75,29 @@ services:
     volumes:
       - fpa-db-data:/var/lib/postgresql/data
 
+  spark-master:
+    image: bitnami/spark:3.5
+    container_name: fpa-spark-master
+    profiles:
+      - analytics
+    environment:
+      SPARK_MODE: master
+    ports:
+      - "7077:7077"
+      - "8081:8080"
+
+  spark-worker:
+    image: bitnami/spark:3.5
+    container_name: fpa-spark-worker
+    profiles:
+      - analytics
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_MEMORY: 1G
+      SPARK_WORKER_CORES: 1
+    depends_on:
+      - spark-master
+
 volumes:
   fpa-db-data:

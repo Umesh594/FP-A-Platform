@@ -15,6 +15,7 @@ from app.services.enterprise_system import (
 )
 from app.evals import run_agent_evals
 from app.mcp_server.server import describe_mcp_server
+from app.pipelines import run_apache_beam_pipeline, run_spark_pipeline
 
 router = APIRouter(prefix="/agents", tags=["agentic-system"])
 
@@ -111,6 +112,22 @@ def data_source_sync(source_id: int, db: Session = Depends(get_db)):
 @router.post("/pipelines/run")
 def pipeline_run(source_id: int | None = None, db: Session = Depends(get_db)):
     return run_pipeline(db, source_id=source_id)
+
+
+@router.post("/pipelines/beam/run")
+def apache_beam_pipeline_run(source_id: int | None = None, db: Session = Depends(get_db)):
+    try:
+        return run_apache_beam_pipeline(db, source_id=source_id)
+    except ImportError as exc:
+        raise HTTPException(status_code=503, detail=f"Apache Beam dependency is not installed: {exc}") from exc
+
+
+@router.post("/pipelines/spark/run")
+def spark_pipeline_run(source_id: int | None = None, db: Session = Depends(get_db)):
+    try:
+        return run_spark_pipeline(db, source_id=source_id)
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Spark pipeline unavailable in this runtime: {exc}") from exc
 
 
 @router.post("/tools/execute")

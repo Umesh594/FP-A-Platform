@@ -255,6 +255,22 @@ export const api = {
     });
   },
 
+  async runBeamPipeline(sourceId?: number) {
+    const suffix = sourceId ? `?source_id=${sourceId}` : "";
+    return fetchJson<Record<string, unknown>>(`/agents/pipelines/beam/run${suffix}`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
+  async runSparkPipeline(sourceId?: number) {
+    const suffix = sourceId ? `?source_id=${sourceId}` : "";
+    return fetchJson<Record<string, unknown>>(`/agents/pipelines/spark/run${suffix}`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  },
+
   async testDataSource(sourceId: number) {
     return fetchJson<Record<string, unknown>>(`/agents/data-sources/${sourceId}/test`, {
       method: "POST",

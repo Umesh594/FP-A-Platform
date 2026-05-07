@@ -21,3 +21,5 @@ groq
 numpy_financial
 xgboost
 locust
+apache-beam
+pyspark

@@ -84,6 +84,26 @@ export default function AgentIntelligence() {
     }
   }
 
+  async function runBeam(sourceId?: number) {
+    setLoading(true);
+    try {
+      setToolResult(await api.runBeamPipeline(sourceId));
+      await refresh();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function runSpark(sourceId?: number) {
+    setLoading(true);
+    try {
+      setToolResult(await api.runSparkPipeline(sourceId));
+      await refresh();
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function testSource(sourceId: number) {
     setToolResult(await api.testDataSource(sourceId));
   }
@@ -275,6 +295,12 @@ export default function AgentIntelligence() {
                 </div>
                 <Button variant="outline" size="sm" onClick={() => syncPipeline(source.id)} disabled={loading}>
                   Pipeline
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => runBeam(source.id)} disabled={loading}>
+                  Beam
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => runSpark(source.id)} disabled={loading}>
+                  Spark
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => testSource(source.id)}>
                   Test

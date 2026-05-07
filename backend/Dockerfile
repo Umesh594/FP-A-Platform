@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     wget \
+    default-jre-headless \
     libffi-dev \
     libssl-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*

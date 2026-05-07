@@ -19,5 +19,6 @@ def run_beam_style_pipeline(db: Session, source_id: int | None = None) -> dict:
         "rows_loaded": run.rows_loaded,
         "quality_score": run.quality_score,
         "checks": run.checks,
-        "simulation": "Apache Beam style local extract-transform-load pipeline",
+        "engine": "python_warehouse_pipeline",
+        "note": "Use /agents/pipelines/beam/run for the real Apache Beam DirectRunner pipeline.",
     }
