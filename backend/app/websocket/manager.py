@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import List
 
 router = APIRouter()
@@ -10,15 +10,23 @@ connections: List[WebSocket] = []
 async def websocket_endpoint(websocket: WebSocket):
 
     await websocket.accept()
+    await websocket.send_json({"type": "connected", "agent": "Agent WebSocket", "explanation": "Realtime agent channel connected"})
 
     connections.append(websocket)
 
     try:
 
         while True:
-            await websocket.receive_text()
+            message = await websocket.receive_text()
+            if message:
+                await websocket.send_json({"type": "heartbeat", "status": "ok"})
 
-    except Exception as e:
+    except WebSocketDisconnect:
+
+        if websocket in connections:
+            connections.remove(websocket)
+
+    except Exception:
 
         if websocket in connections:
             connections.remove(websocket)

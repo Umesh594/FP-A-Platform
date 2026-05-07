@@ -162,6 +162,10 @@ export function getWsUrl() {
   return `${wsProtocol}//${url.host}/ws/agents`;
 }
 
+export function getApiBaseUrl() {
+  return apiBase.replace(/\/$/, "");
+}
+
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(getApiUrl(path), {
     ...init,
@@ -180,6 +184,10 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  async health() {
+    return fetchJson<{ status: string; app: string }>("/health");
+  },
+
   async getCompanies() {
     return fetchJson<ApiCompany[]>("/companies/");
   },
