@@ -1,7 +1,4 @@
 import asyncio
-from app.agents.revenue_agent import RevenueForecastAgent
-from app.agents.expense_agent import ExpenseForecastAgent
-from app.agents.capital_agent import CapitalPlanningAgent
 from sqlalchemy.orm import Session
 from app.logger import logger
 from app.utils.json_sanitize import sanitize_for_json
@@ -12,6 +9,10 @@ async def generate_financial_forecast(company_id: int, db: Session):
     Handles empty DB gracefully.
     """
     try:
+        from app.agents.capital_agent import CapitalPlanningAgent
+        from app.agents.expense_agent import ExpenseForecastAgent
+        from app.agents.revenue_agent import RevenueForecastAgent
+
         revenue_agent = RevenueForecastAgent()
         expense_agent = ExpenseForecastAgent()
         capital_agent = CapitalPlanningAgent()

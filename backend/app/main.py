@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_database
 from app.api import agents, auth, companies, financials, kpis, reports, initiatives, variances, drivers, emails, orchestrator, portfolio, scenarios
 from app.websocket.manager import router as websocket_router
-from app.tasks.scheduler import start_scheduler
 from app.config import settings
 from app.logger import logger
 
@@ -58,4 +57,6 @@ async def startup():
         logger.exception(f"Database initialization failed: {e}")
         raise
     if settings.ENABLE_API_SCHEDULER:
+        from app.tasks.scheduler import start_scheduler
+
         start_scheduler()

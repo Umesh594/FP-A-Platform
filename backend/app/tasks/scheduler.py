@@ -1,6 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.database import SessionLocal
-from app.agents.orchestrator_agent import StrategicOrchestrator
 from app.logger import logger
 from app.config import settings
 
@@ -12,6 +11,8 @@ def start_scheduler():
 
 @scheduler.scheduled_job("cron", day=1, hour=6)
 async def monthly_reforecast():
+    from app.agents.orchestrator_agent import StrategicOrchestrator
+
     db = SessionLocal()
     orchestrator = StrategicOrchestrator()
     try:
@@ -26,6 +27,8 @@ async def monthly_reforecast():
 
 @scheduler.scheduled_job("cron", day_of_week="mon", hour=6)
 async def weekly_update():
+    from app.agents.orchestrator_agent import StrategicOrchestrator
+
     db = SessionLocal()
     orchestrator = StrategicOrchestrator()
     try:
@@ -38,6 +41,8 @@ async def weekly_update():
 
 @scheduler.scheduled_job("interval", hours=4)
 async def kpi_monitoring():
+    from app.agents.orchestrator_agent import StrategicOrchestrator
+
     db = SessionLocal()
     orchestrator = StrategicOrchestrator()
     try:

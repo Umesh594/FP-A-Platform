@@ -1,10 +1,8 @@
 ﻿from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
-from app.agents.orchestrator_agent import StrategicOrchestrator
 from app.dependencies import get_db
 from app.services.financial_service import generate_financial_forecast, get_financial_history
 from app.services.dataset_loader import load_financial_csv, resolve_company_ids_from_csv
-from app.ml import train_xgboost_style_forecast
 from app.models.financials import FinancialMetric
 from app.utils.json_sanitize import sanitize_for_json
 import tempfile
@@ -25,6 +23,8 @@ async def financial_forecast(company_id: int, db: Session = Depends(get_db)):
 
 @router.get("/{company_id}/ml-forecast")
 def ml_financial_forecast(company_id: int, target: str = "revenue", db: Session = Depends(get_db)):
+    from app.ml import train_xgboost_style_forecast
+
     rows = (
         db.query(FinancialMetric)
         .filter(FinancialMetric.company_id == company_id)
@@ -61,6 +61,8 @@ async def upload_financial_csv(file: UploadFile = File(...), db: Session = Depen
             raise HTTPException(status_code=400, detail=f"Failed to load CSV: {str(e)}")
 
         # Resolve companies and trigger orchestrator
+        from app.agents.orchestrator_agent import StrategicOrchestrator
+
         company_ids = resolve_company_ids_from_csv(path, db)
         if not company_ids:
             raise HTTPException(status_code=400, detail="No valid company identifiers found in CSV")

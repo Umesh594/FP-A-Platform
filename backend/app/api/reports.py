@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse, StreamingResponse
 from app.dependencies import get_db
-from app.agents.reporting_agent import ReportingAgent
 from app.models.company import Company
 from app.models.financials import FinancialMetric
 from app.models.initiative import Initiative
@@ -17,6 +16,8 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 @router.post("/board-pack")
 async def generate_board_pack(db: Session = Depends(get_db)):
     try:
+        from app.agents.reporting_agent import ReportingAgent
+
         reporting_agent = ReportingAgent()
 
         # ✅ Agent handles EVERYTHING (DB → insights → PDF)

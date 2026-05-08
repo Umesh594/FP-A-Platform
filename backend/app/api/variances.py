@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.agents.variance_agent import VarianceExplanationAgent
 from app.dependencies import get_db
 from datetime import date
 from app.models.financials import FinancialMetric
@@ -32,6 +31,8 @@ async def get_variances(company_id: int, period: str, db: Session = Depends(get_
         forecast_result = await revenue_agent.run(company_id, db)
         forecast_list = forecast_result.get("forecast", [])
         forecast_value = forecast_list[-1].get("yhat") if forecast_list else metric.revenue
+
+        from app.agents.variance_agent import VarianceExplanationAgent
 
         variance_agent = VarianceExplanationAgent()
         return await variance_agent.run(actual=metric.revenue, forecast=forecast_value)
