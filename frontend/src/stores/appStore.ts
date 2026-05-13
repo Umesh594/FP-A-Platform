@@ -76,6 +76,8 @@ export interface SendLog {
   agentName: string;
 }
 
+export type AgentConnectionStatus = "connecting" | "connected" | "degraded" | "offline";
+
 interface AppState {
   theme: "light" | "dark";
   toggleTheme: () => void;
@@ -109,6 +111,8 @@ interface AppState {
 
   isConnected: boolean;
   setConnected: (v: boolean) => void;
+  agentConnectionStatus: AgentConnectionStatus;
+  setAgentConnectionStatus: (v: AgentConnectionStatus) => void;
 
   loadingCompanies: boolean;
   setLoadingCompanies: (v: boolean) => void;
@@ -185,6 +189,8 @@ export const useAppStore = create<AppState>((set) => ({
 
   isConnected: false,
   setConnected: (v) => set({ isConnected: v }),
+  agentConnectionStatus: "connecting",
+  setAgentConnectionStatus: (v) => set({ agentConnectionStatus: v, isConnected: v === "connected" || v === "degraded" }),
 
   loadingCompanies: false,
   setLoadingCompanies: (v) => set({ loadingCompanies: v }),

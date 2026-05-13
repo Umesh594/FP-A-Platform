@@ -34,9 +34,16 @@ import {
 
 export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
-  const { selectedCompany, theme, toggleTheme, isConnected } = useAppStore();
+  const { selectedCompany, theme, toggleTheme, agentConnectionStatus } = useAppStore();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const agentStatusConfig = {
+    connected: { label: "Connected", icon: Wifi, className: "text-success" },
+    degraded: { label: "API Online", icon: Wifi, className: "text-warning" },
+    connecting: { label: "Connecting", icon: Wifi, className: "text-warning animate-pulse" },
+    offline: { label: "Offline", icon: WifiOff, className: "text-destructive" },
+  }[agentConnectionStatus];
+  const StatusIcon = agentStatusConfig.icon;
   const navItems = [
   { title: "Portfolio Dashboard", url: "/", icon: LayoutDashboard },
   {
@@ -129,8 +136,8 @@ export function AppSidebar() {
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <div className="flex items-center gap-1.5 text-xs text-sidebar-foreground/60">
-            {isConnected ? <Wifi className="w-3 h-3 text-success" /> : <WifiOff className="w-3 h-3 text-destructive" />}
-            {!collapsed && <span>{isConnected ? "Connected" : "Offline"}</span>}
+            <StatusIcon className={`w-3 h-3 ${agentStatusConfig.className}`} />
+            {!collapsed && <span>{agentStatusConfig.label}</span>}
           </div>
           <button onClick={toggleSidebar} className="p-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors">
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
