@@ -26,6 +26,10 @@ celery.conf.beat_schedule = {
         "task": "app.tasks.celery_app.kpi_monitoring_task",
         "schedule": crontab(minute=0, hour="*/4"),
     },
+    "outbox-drain": {
+        "task": "app.tasks.celery_app.outbox_drain_task",
+        "schedule": 30.0,
+    },
 }
 
 @celery.task
@@ -66,3 +70,14 @@ def kpi_monitoring_task():
     for company_id in range(1, 7):
         run_planning_cycle_task.delay(company_id)
     logger.info("Queued KPI monitoring for all portfolio companies")
+
+
+@celery.task
+def outbox_drain_task(batch_size: int = 25):
+    from app.services.reliability import drain_outbox
+
+    db = SessionLocal()
+    try:
+        return drain_outbox(db, batch_size=batch_size)
+    finally:
+        db.close()

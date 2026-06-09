@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -219,3 +219,53 @@ class ScenarioResult(Base):
     scenario_name = Column(String, nullable=False)
     result_payload = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class IdempotencyRecord(Base):
+    __tablename__ = "idempotency_records"
+
+    id = Column(Integer, primary_key=True)
+    idempotency_key = Column(String, unique=True, index=True, nullable=False)
+    request_hash = Column(String, nullable=False)
+    endpoint = Column(String, index=True, nullable=False)
+    status = Column(String, default="processing", nullable=False)
+    response_payload = Column(JSON, nullable=True)
+    locked_until = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class OutboxEvent(Base):
+    __tablename__ = "outbox_events"
+
+    id = Column(Integer, primary_key=True)
+    aggregate_type = Column(String, index=True, nullable=False)
+    aggregate_id = Column(String, index=True, nullable=False)
+    event_type = Column(String, index=True, nullable=False)
+    payload = Column(JSON, nullable=False)
+    status = Column(String, default="pending", index=True, nullable=False)
+    attempts = Column(Integer, default=0, nullable=False)
+    next_attempt_at = Column(DateTime, default=datetime.utcnow, index=True, nullable=False)
+    locked_by = Column(String, nullable=True)
+    locked_until = Column(DateTime, nullable=True)
+    last_error = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    processed_at = Column(DateTime, nullable=True)
+
+
+class CapacitySnapshot(Base):
+    __tablename__ = "capacity_snapshots"
+
+    id = Column(Integer, primary_key=True)
+    component = Column(String, index=True, nullable=False)
+    metric_name = Column(String, index=True, nullable=False)
+    metric_value = Column(Float, nullable=False)
+    unit = Column(String, default="count", nullable=False)
+    threshold = Column(Float, nullable=True)
+    status = Column(String, default="healthy", nullable=False)
+    details = Column(JSON, nullable=True)
+    captured_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("component", "metric_name", "captured_at", name="uq_capacity_metric_capture"),
+    )

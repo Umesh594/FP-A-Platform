@@ -1,20 +1,12 @@
-.env
-backend/.env
-backend/venv/
-frontend/node_modules/
-frontend/dist/
-__pycache__/
-*.pyc
-.pytest_cache/
-.ruff_cache/
-.DS_Store
 # Environment / secrets
 .env
 backend/.env
 frontend/.env
-echo .env >> .gitignore
-echo .env.* >> .gitignore
-echo !.env.example >> .gitignore
+*.env.local
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
 # Python
 __pycache__/
 *.py[cod]
@@ -55,11 +47,7 @@ backend/reports/
 .DS_Store
 Thumbs.db
 
-# Misc
+# Archives
 *.zip
 *.tar
 *.gz
-backend/.env.example
-backend/.env
-.env
-.env.*

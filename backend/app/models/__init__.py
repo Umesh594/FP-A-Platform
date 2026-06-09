@@ -15,12 +15,15 @@ from app.models.advanced import (
     EvalRun,
     FactFinancial,
     ForecastResult,
+    IdempotencyRecord,
+    OutboxEvent,
     PipelineRun,
     RawFinancialUpload,
     Recommendation,
     ScenarioResult,
     StagingFinancial,
     ToolAuditLog,
+    CapacitySnapshot,
 )
 
 __all__ = [
@@ -38,12 +41,15 @@ __all__ = [
     "FactFinancial",
     "FinancialMetric",
     "ForecastResult",
+    "IdempotencyRecord",
     "Initiative",
     "KPI",
+    "OutboxEvent",
     "PipelineRun",
     "RawFinancialUpload",
     "Recommendation",
     "ScenarioResult",
     "StagingFinancial",
     "ToolAuditLog",
+    "CapacitySnapshot",
 ]
