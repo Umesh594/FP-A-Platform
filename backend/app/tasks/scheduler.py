@@ -52,3 +52,37 @@ async def kpi_monitoring():
         logger.exception(f"KPI monitoring failed: {e}")
     finally:
         db.close()
+
+
+@scheduler.scheduled_job("cron", day_of_week="sun", hour=5)
+async def weekly_model_monitoring():
+    from app.api.financials import _persist_forecast_run
+    from app.ml import rows_from_financial_metrics, train_financial_forecast
+    from app.models.financials import FinancialMetric
+
+    db = SessionLocal()
+    try:
+        company_ids = [
+            row[0]
+            for row in db.query(FinancialMetric.company_id)
+            .distinct()
+            .order_by(FinancialMetric.company_id)
+            .all()
+        ]
+        for company_id in company_ids:
+            rows = (
+                db.query(FinancialMetric)
+                .filter(FinancialMetric.company_id == company_id)
+                .order_by(FinancialMetric.period)
+                .all()
+            )
+            payload = rows_from_financial_metrics(rows)
+            for target in ("revenue", "expense", "cash_flow"):
+                try:
+                    result = train_financial_forecast(payload, company_id=company_id, target=target, horizon=6)
+                    _persist_forecast_run(db, result.payload)
+                except Exception as e:
+                    logger.exception(f"Model monitoring failed for company_id={company_id}, target={target}: {e}")
+                    db.rollback()
+    finally:
+        db.close()

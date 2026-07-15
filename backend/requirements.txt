@@ -20,6 +20,7 @@ apscheduler
 groq
 numpy_financial
 xgboost
+mlflow
 locust
 apache-beam
 pyspark

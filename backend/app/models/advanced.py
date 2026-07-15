@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -209,6 +209,78 @@ class ForecastResult(Base):
     upper_bound = Column(Float, default=0)
     model_metrics = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class ForecastExperiment(Base):
+    __tablename__ = "forecast_experiments"
+
+    id = Column(Integer, primary_key=True)
+    experiment_name = Column(String, index=True, nullable=False)
+    model_version = Column(String, unique=True, index=True, nullable=False)
+    company_id = Column(Integer, index=True, nullable=False)
+    target = Column(String, index=True, nullable=False)
+    champion_model = Column(String, nullable=False)
+    baseline_model = Column(String, nullable=False)
+    params = Column(JSON, nullable=True)
+    metrics = Column(JSON, nullable=False)
+    feature_summary = Column(JSON, nullable=True)
+    mlflow_run_id = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class ForecastPoint(Base):
+    __tablename__ = "forecast_points"
+
+    id = Column(Integer, primary_key=True)
+    model_version = Column(String, ForeignKey("forecast_experiments.model_version"), index=True, nullable=False)
+    company_id = Column(Integer, index=True, nullable=False)
+    target = Column(String, index=True, nullable=False)
+    period = Column(Date, index=True, nullable=False)
+    prediction = Column(Float, nullable=False)
+    lower_bound = Column(Float, nullable=False)
+    upper_bound = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("model_version", "period", name="uq_forecast_point_version_period"),
+    )
+
+
+class AnomalyFlag(Base):
+    __tablename__ = "anomaly_flags"
+
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer, index=True, nullable=False)
+    target = Column(String, index=True, nullable=False)
+    period = Column(Date, index=True, nullable=False)
+    actual_value = Column(Float, nullable=False)
+    expected_value = Column(Float, nullable=True)
+    anomaly_score = Column(Float, nullable=False)
+    severity = Column(String, default="low", nullable=False)
+    method = Column(String, nullable=False)
+    details = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("company_id", "target", "period", "method", name="uq_anomaly_company_target_period_method"),
+    )
+
+
+class ModelMonitoringSnapshot(Base):
+    __tablename__ = "model_monitoring_snapshots"
+
+    id = Column(Integer, primary_key=True)
+    company_id = Column(Integer, index=True, nullable=False)
+    target = Column(String, index=True, nullable=False)
+    model_version = Column(String, index=True, nullable=False)
+    rolling_mape = Column(Float, nullable=False)
+    rolling_rmse = Column(Float, nullable=False)
+    rolling_mae = Column(Float, nullable=False)
+    threshold_mape = Column(Float, default=0.15, nullable=False)
+    retrain_recommended = Column(Boolean, default=False, nullable=False)
+    drift_status = Column(String, default="healthy", nullable=False)
+    details = Column(JSON, nullable=True)
+    captured_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
 class ScenarioResult(Base):
