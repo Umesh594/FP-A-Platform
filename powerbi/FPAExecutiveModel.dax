@@ -1,0 +1,50 @@
+-- Autonomous FP&A Power BI semantic measures.
+-- Data source: /powerbi/executive-dataset or backend/sql/powerbi_semantic_views.sql.
+
+Total Revenue :=
+SUM ( 'FinancialFact'[revenue] )
+
+Total EBITDA :=
+SUM ( 'FinancialFact'[ebitda] )
+
+Gross Profit :=
+SUM ( 'FinancialFact'[gross_profit] )
+
+Gross Margin % :=
+DIVIDE ( [Gross Profit], [Total Revenue] )
+
+EBITDA Margin % :=
+DIVIDE ( [Total EBITDA], [Total Revenue] )
+
+Revenue MoM % :=
+VAR PreviousRevenue =
+    CALCULATE ( [Total Revenue], DATEADD ( 'Date'[Date], -1, MONTH ) )
+RETURN
+    DIVIDE ( [Total Revenue] - PreviousRevenue, PreviousRevenue )
+
+At-Risk KPI Count :=
+SUM ( 'KpiScorecard'[at_risk_flag] )
+
+KPI Attainment % :=
+AVERAGE ( 'KpiScorecard'[attainment_ratio] )
+
+Initiative Revenue ROI :=
+DIVIDE (
+    SUM ( 'InitiativeRoi'[revenue_impact] ),
+    SUM ( 'InitiativeRoi'[investment] )
+)
+
+Revenue Per Customer :=
+DIVIDE (
+    SUM ( 'FinancialFact'[revenue] ),
+    SUM ( 'FinancialFact'[customer_count] )
+)
+
+Forecast Accuracy % :=
+1 - AVERAGE ( 'ModelMonitoring'[mape] )
+
+Drift Breach Count :=
+CALCULATE (
+    COUNTROWS ( 'ModelMonitoring' ),
+    'ModelMonitoring'[drift_status] = "breach"
+)

@@ -62,3 +62,28 @@ For high-frequency trading or quant engineering firms, use this as supporting sy
 - `GET /financials/{company_id}/ml-experiments`
 - `GET /financials/{company_id}/anomalies`
 - `GET /financials/{company_id}/model-monitoring`
+
+## Google Application Engineer Upgrade
+
+This project now includes a production-style Salesforce integration that supports secure 1P/3P enterprise data exchange and agentic FP&A workflows.
+
+### Implemented Capabilities
+
+- Added a first-class Salesforce connector with mock-mode development plus live OAuth/SOQL mode.
+- Added credential validation, secret redaction, timeout handling, retry logic, paginated SOQL reads, and safe config summaries.
+- Added `GET /integrations/salesforce/health` for connector readiness checks.
+- Added idempotent `POST /integrations/salesforce/pipeline` with `Idempotency-Key` enforcement.
+- Added durable outbox event creation for `salesforce.pipeline.synced` so downstream agentic planning workflows can replay sync events safely.
+- Normalized Salesforce Accounts and Opportunities into FP&A planning metrics: account count, open opportunity count, total pipeline, weighted pipeline, closed-won revenue, close quarter, stage, probability, and forecast category.
+
+### Verified Mock Metrics
+
+- Mock Salesforce sync covers **3 accounts** and **3 opportunities**.
+- Planning summary includes **2 open opportunities**, **$2.09M total pipeline**, **$1.337M weighted pipeline**, and **$460K closed-won revenue**.
+- Unit tests validate secret redaction, missing-credential failure in live mode, weighted revenue calculation, fiscal-quarter mapping, and sync row counts.
+
+### Google-Aligned Resume Bullet
+
+```latex
+\item Built a secure Salesforce-to-FP\&A integration with OAuth/SOQL-ready sync, secret redaction, retry handling and idempotent APIs, converting \textbf{3 CRM accounts} and \textbf{3 opportunities} into \textbf{\$2.09M pipeline}, \textbf{\$1.337M weighted revenue} and replayable outbox events for agentic planning workflows.
+```

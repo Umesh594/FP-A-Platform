@@ -7,6 +7,7 @@ from app.ml.forecasting_service import (
     train_financial_forecast,
     walk_forward_validate,
 )
+from app.ml.decision_intelligence import build_decision_intelligence_report
 
 __all__ = [
     "FEATURE_COLUMNS",
@@ -16,4 +17,5 @@ __all__ = [
     "train_financial_forecast",
     "train_xgboost_style_forecast",
     "walk_forward_validate",
+    "build_decision_intelligence_report",
 ]

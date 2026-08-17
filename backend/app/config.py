@@ -12,6 +12,17 @@ class Settings(BaseSettings):
     API_KEY: str | None = None
     ENABLE_API_SCHEDULER: bool = False
 
+    # Salesforce enterprise integration
+    SALESFORCE_BASE_URL: str = ""
+    SALESFORCE_CLIENT_ID: str = ""
+    SALESFORCE_CLIENT_SECRET: str = ""
+    SALESFORCE_USERNAME: str = ""
+    SALESFORCE_PASSWORD: str = ""
+    SALESFORCE_SECURITY_TOKEN: str = ""
+    SALESFORCE_API_VERSION: str = "v60.0"
+    SALESFORCE_TIMEOUT_SECONDS: int = 15
+    SALESFORCE_MOCK_MODE: bool = True
+
     # Emails
     CFO_EMAIL_TEMPLATE: str = ""
     WEEKLY_UPDATE_EMAIL: str = ""
