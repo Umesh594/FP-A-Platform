@@ -31,6 +31,12 @@ class Settings(BaseSettings):
     ORACLE_MOCK_MODE: bool = True
     ORACLE_TIMEOUT_SECONDS: int = 10
 
+    # Network protocol diagnostics
+    SMTP_HOST: str = "smtp.sendgrid.net"
+    SMTP_PORT: int = 587
+    SMTP_TLS_REQUIRED: bool = True
+    NETWORK_DIAGNOSTICS_MOCK_MODE: bool = True
+
     # Emails
     CFO_EMAIL_TEMPLATE: str = ""
     WEEKLY_UPDATE_EMAIL: str = ""

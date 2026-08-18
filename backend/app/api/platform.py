@@ -11,6 +11,7 @@ from app.services.reliability import (
     partition_report,
     run_idempotent,
 )
+from app.services.network_diagnostics import platform_protocol_report
 
 router = APIRouter(prefix="/platform", tags=["platform-reliability"])
 
@@ -27,6 +28,11 @@ def readiness(db: Session = Depends(get_db)):
     if health["status"] != "ok":
         raise HTTPException(status_code=503, detail=health)
     return health
+
+
+@router.get("/network/protocols")
+def network_protocols():
+    return platform_protocol_report()
 
 
 @router.get("/capacity")
