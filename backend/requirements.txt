@@ -24,3 +24,4 @@ mlflow
 locust
 apache-beam
 pyspark
+oracledb

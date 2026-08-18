@@ -23,6 +23,14 @@ class Settings(BaseSettings):
     SALESFORCE_TIMEOUT_SECONDS: int = 15
     SALESFORCE_MOCK_MODE: bool = True
 
+    # Oracle finance integration
+    ORACLE_DSN: str = ""
+    ORACLE_USERNAME: str = ""
+    ORACLE_PASSWORD: str = ""
+    ORACLE_SCHEMA: str = "FPNA"
+    ORACLE_MOCK_MODE: bool = True
+    ORACLE_TIMEOUT_SECONDS: int = 10
+
     # Emails
     CFO_EMAIL_TEMPLATE: str = ""
     WEEKLY_UPDATE_EMAIL: str = ""

@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.connectors.salesforce_connector import SalesforceConnector, SalesforceIntegrationError
+from app.connectors.oracle_connector import OracleFinanceConnector, OracleIntegrationError
 from app.dependencies import get_db
 from app.services.reliability import enqueue_outbox_event, run_idempotent
 
@@ -66,6 +67,57 @@ def salesforce_pipeline_snapshot(
         endpoint="/integrations/salesforce/pipeline",
         idempotency_key=idempotency_key,
         request_payload=request_payload,
+        operation=operation,
+    )
+    if result["status"] == "conflict":
+        raise HTTPException(status_code=409, detail=result["message"])
+    return result
+
+
+@router.get("/oracle/health")
+def oracle_health():
+    connector = OracleFinanceConnector()
+    try:
+        result = connector.test_connection()
+    except OracleIntegrationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return result.__dict__
+
+
+@router.post("/oracle/financial-actuals")
+def oracle_financial_actuals(
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    db: Session = Depends(get_db),
+):
+    if not idempotency_key:
+        raise HTTPException(status_code=400, detail="Idempotency-Key header is required")
+
+    def operation():
+        connector = OracleFinanceConnector()
+        rows = connector.fetch_financial_actuals()
+        event = enqueue_outbox_event(
+            db,
+            aggregate_type="oracle_finance",
+            aggregate_id="financial_actuals",
+            event_type="oracle.financial_actuals.synced",
+            payload={
+                "source": "oracle",
+                "rows_synced": len(rows),
+                "accounts": sorted({row["account"] for row in rows}),
+            },
+        )
+        return {
+            "sync_event_id": event.id,
+            "status": "synced",
+            "rows_synced": len(rows),
+            "accounts": sorted({row["account"] for row in rows}),
+        }
+
+    result = run_idempotent(
+        db,
+        endpoint="/integrations/oracle/financial-actuals",
+        idempotency_key=idempotency_key,
+        request_payload={"source": "oracle_finance"},
         operation=operation,
     )
     if result["status"] == "conflict":
