@@ -13,6 +13,7 @@ services:
     depends_on:
       - db
       - redis
+      - mysql
 
   frontend:
     build:
@@ -62,6 +63,21 @@ services:
       - "6379:6379"
     restart: always
 
+  mysql:
+    image: mysql:8.4
+    container_name: fpa-mysql-source
+    environment:
+      MYSQL_DATABASE: fpa_source
+      MYSQL_USER: fpa_reader
+      MYSQL_PASSWORD: change-me
+      MYSQL_ROOT_PASSWORD: local-root-change-me
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - ./backend/sql/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - fpa-mysql-data:/var/lib/mysql
+
   db:
     image: timescale/timescaledb:latest-pg15
     container_name: fpa-db
@@ -101,3 +117,4 @@ services:
 
 volumes:
   fpa-db-data:
+  fpa-mysql-data:

@@ -1,0 +1,13 @@
+<template>
+  <lightning-card title="FP&A Pipeline Summary" icon-name="standard:opportunity">
+    <div class="slds-p-around_medium">
+      <template if:true={summary.data}>
+        <p>{summary.data.accountCount} accounts | {summary.data.openOpportunityCount} open opportunities</p>
+        <p>Total pipeline: <lightning-formatted-number value={summary.data.totalPipelineAmount} format-style="currency"></lightning-formatted-number></p>
+        <p>Weighted pipeline: <lightning-formatted-number value={summary.data.weightedPipelineAmount} format-style="currency"></lightning-formatted-number></p>
+        <lightning-button label="Publish Sync Event" onclick={handlePublish}></lightning-button>
+      </template>
+      <template if:true={summary.error}><p class="slds-text-color_error">Unable to load pipeline data.</p></template>
+    </div>
+  </lightning-card>
+</template>

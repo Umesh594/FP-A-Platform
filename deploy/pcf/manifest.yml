@@ -1,0 +1,12 @@
+applications:
+  - name: autonomous-fpa-api
+    path: ../../backend
+    memory: 1G
+    disk_quota: 2G
+    buildpacks:
+      - python_buildpack
+    command: gunicorn -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT
+    health-check-type: http
+    health-check-http-endpoint: /health
+    env:
+      MYSQL_MOCK_MODE: "false"

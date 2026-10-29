@@ -1,0 +1,6 @@
+{
+  "packageDirectories": [{ "path": "force-app", "default": true }],
+  "name": "FpaSalesforceExtension",
+  "namespace": "",
+  "sourceApiVersion": "64.0"
+}

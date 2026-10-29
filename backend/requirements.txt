@@ -25,3 +25,5 @@ locust
 apache-beam
 pyspark
 oracledb
+pymysql
+httpx

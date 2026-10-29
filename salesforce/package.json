@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "test:lwc": "sfdx-lwc-jest",
+    "test:lwc:coverage": "sfdx-lwc-jest --coverage"
+  },
+  "devDependencies": {
+    "@salesforce/sfdx-lwc-jest": "^7.1.0"
+  }
+}

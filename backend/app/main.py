@@ -1,10 +1,15 @@
+import time
+from uuid import uuid4
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.database import init_database
 from app.api import agents, auth, companies, financials, integrations, kpis, reports, initiatives, variances, drivers, emails, orchestrator, platform, portfolio, scenarios, powerbi
 from app.websocket.manager import router as websocket_router
 from app.config import settings
 from app.logger import logger
+from app.services.privacy import audit_event
 
 app = FastAPI(
     title="Autonomous FP&A Platform",
@@ -13,13 +18,27 @@ app = FastAPI(
 
 @app.middleware("http")
 async def api_key_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID", str(uuid4()))
+    start = time.perf_counter()
     if settings.API_KEY:
         if request.url.path in {"/docs", "/openapi.json"}:
             return await call_next(request)
         if request.headers.get("X-API-Key") != settings.API_KEY:
-            from fastapi.responses import JSONResponse
-            return JSONResponse(status_code=401, content={"detail": "Unauthorized"})
-    return await call_next(request)
+            audit_event("api_key_rejected", path=request.url.path, method=request.method, request_id=request_id)
+            return JSONResponse(status_code=401, content={"detail": "Unauthorized"}, headers={"X-Request-ID": request_id})
+    response = await call_next(request)
+    latency_ms = round((time.perf_counter() - start) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    response.headers["X-Response-Time-Ms"] = str(latency_ms)
+    audit_event(
+        "request_completed",
+        path=request.url.path,
+        method=request.method,
+        status_code=response.status_code,
+        latency_ms=latency_ms,
+        request_id=request_id,
+    )
+    return response
 
 app.add_middleware(
     CORSMiddleware,

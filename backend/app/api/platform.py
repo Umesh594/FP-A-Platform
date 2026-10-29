@@ -8,6 +8,7 @@ from app.services.reliability import (
     dependency_health,
     drain_outbox,
     enqueue_outbox_event,
+    live_operations_report,
     partition_report,
     run_idempotent,
 )
@@ -28,6 +29,11 @@ def readiness(db: Session = Depends(get_db)):
     if health["status"] != "ok":
         raise HTTPException(status_code=503, detail=health)
     return health
+
+
+@router.get("/liveops")
+def liveops(db: Session = Depends(get_db)):
+    return live_operations_report(db)
 
 
 @router.get("/network/protocols")

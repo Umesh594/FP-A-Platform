@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.connectors.salesforce_connector import SalesforceConnector, SalesforceIntegrationError
 from app.connectors.oracle_connector import OracleFinanceConnector, OracleIntegrationError
+from app.connectors.mysql_finance_connector import MySQLFinanceConnector, MySQLIntegrationError
 from app.dependencies import get_db
 from app.services.reliability import enqueue_outbox_event, run_idempotent
 
@@ -118,6 +119,46 @@ def oracle_financial_actuals(
         endpoint="/integrations/oracle/financial-actuals",
         idempotency_key=idempotency_key,
         request_payload={"source": "oracle_finance"},
+        operation=operation,
+    )
+    if result["status"] == "conflict":
+        raise HTTPException(status_code=409, detail=result["message"])
+    return result
+
+
+@router.get("/mysql/health")
+def mysql_health():
+    try:
+        result = MySQLFinanceConnector().test_connection()
+    except MySQLIntegrationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return result.__dict__
+
+
+@router.post("/mysql/financial-actuals")
+def mysql_financial_actuals(
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    db: Session = Depends(get_db),
+):
+    if not idempotency_key:
+        raise HTTPException(status_code=400, detail="Idempotency-Key header is required")
+
+    def operation():
+        rows = MySQLFinanceConnector().fetch_financial_actuals()
+        event = enqueue_outbox_event(
+            db,
+            aggregate_type="mysql_finance",
+            aggregate_id="financial_actuals",
+            event_type="mysql.financial_actuals.synced",
+            payload={"source": "mysql", "rows_synced": len(rows), "accounts": sorted({row["account"] for row in rows})},
+        )
+        return {"sync_event_id": event.id, "status": "synced", "rows_synced": len(rows), "accounts": sorted({row["account"] for row in rows})}
+
+    result = run_idempotent(
+        db,
+        endpoint="/integrations/mysql/financial-actuals",
+        idempotency_key=idempotency_key,
+        request_payload={"source": "mysql_finance"},
         operation=operation,
     )
     if result["status"] == "conflict":

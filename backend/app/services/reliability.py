@@ -293,3 +293,35 @@ def dependency_health(db: Session) -> dict[str, Any]:
 
     overall = "ok" if all(check["status"] == "ok" for check in checks.values()) else "degraded"
     return {"status": overall, "checks": checks}
+
+
+def live_operations_report(db: Session) -> dict[str, Any]:
+    health = dependency_health(db)
+    capacity = database_capacity_report(db)
+    degraded_dependencies = [
+        name for name, check in health["checks"].items() if check["status"] != "ok"
+    ]
+    warning_metrics = [
+        metric["metric_name"] for metric in capacity["metrics"] if metric["status"] == "warning"
+    ]
+    status = "healthy" if not degraded_dependencies and not warning_metrics else "degraded"
+
+    return {
+        "status": status,
+        "slo": {
+            "availability_target_pct": 99.9,
+            "readiness_target_pct": 100.0,
+            "max_pending_outbox_events": 1000,
+        },
+        "signals": {
+            "degraded_dependencies": degraded_dependencies,
+            "capacity_warnings": warning_metrics,
+        },
+        "operational_controls": [
+            "request-id correlation",
+            "PII-redacted audit events",
+            "dependency readiness probes",
+            "outbox replay safety",
+            "capacity thresholds",
+        ],
+    }

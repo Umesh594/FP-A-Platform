@@ -31,6 +31,20 @@ class Settings(BaseSettings):
     ORACLE_MOCK_MODE: bool = True
     ORACLE_TIMEOUT_SECONDS: int = 10
 
+    # MySQL operational finance source
+    MYSQL_HOST: str = "mysql"
+    MYSQL_PORT: int = 3306
+    MYSQL_DATABASE: str = "fpa_source"
+    MYSQL_USERNAME: str = "fpa_reader"
+    MYSQL_PASSWORD: str = ""
+    MYSQL_MOCK_MODE: bool = True
+    MYSQL_TIMEOUT_SECONDS: int = 10
+
+    # Splunk HTTP Event Collector. Disabled until both values are configured.
+    SPLUNK_HEC_URL: str = ""
+    SPLUNK_HEC_TOKEN: str = ""
+    SPLUNK_HEC_INDEX: str = "fpa-platform"
+
     # Network protocol diagnostics
     SMTP_HOST: str = "smtp.sendgrid.net"
     SMTP_PORT: int = 587
