@@ -1,0 +1,6 @@
+<template>
+  <lightning-card title="Approved Workforce Plans" icon-name="standard:people">
+    <template if:true={hasPlans}><lightning-datatable key-field="department" data={plans.data} columns={columns}></lightning-datatable></template>
+    <template if:false={hasPlans}><p class="slds-p-around_medium">No approved workforce plans are available.</p></template>
+  </lightning-card>
+</template>

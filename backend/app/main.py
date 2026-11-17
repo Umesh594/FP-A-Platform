@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.database import init_database
-from app.api import agents, auth, companies, financials, integrations, kpis, reports, initiatives, variances, drivers, emails, orchestrator, platform, portfolio, scenarios, powerbi
+from app.api import agents, auth, companies, financials, integrations, kpis, reports, initiatives, variances, drivers, emails, orchestrator, platform, portfolio, scenarios, powerbi, workforce
 from app.websocket.manager import router as websocket_router
 from app.config import settings
 from app.logger import logger
@@ -64,6 +64,7 @@ app.include_router(auth.router)
 app.include_router(platform.router)
 app.include_router(integrations.router)
 app.include_router(powerbi.router)
+app.include_router(workforce.router)
 
 
 @app.get("/health", tags=["health"])

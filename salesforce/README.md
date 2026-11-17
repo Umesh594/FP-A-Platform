@@ -1,6 +1,10 @@
 # FP&A Salesforce DX Extension
 
-This source package complements the Python FP&A service with Salesforce-native UI, Apex, SOSL search, Platform Events, and tests.
+This source package complements the Python FP&A service with Salesforce-native UI, Apex, SOSL search, Platform Events, and tests. The workforce extension consumes the `Workforce_Plan_Approved__e` event contract emitted only after the FastAPI approval workflow reaches `approved`.
+
+## Workforce approval automation
+
+The backend owns approval state, idempotency, audit history, and the transactional outbox. In Salesforce, create a record-triggered Flow subscribed to `Workforce_Plan_Approved__e` to notify the People Operations queue or create a follow-up task. This deployment-neutral handoff avoids committing org IDs, queue IDs, or credentials to source control; the event schema and Apex publisher are included in this package.
 
 ## Local quality checks
 

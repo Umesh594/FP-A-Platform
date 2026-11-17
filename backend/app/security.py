@@ -7,6 +7,8 @@ ROLE_PERMISSIONS = {
     "Viewer": {"read_dashboards", "get_company_financials", "get_kpi_risks"},
     "Finance Analyst": {"read_dashboards", "run_forecasts", "run_scenarios", "sync_data"},
     "CFO": {"read_dashboards", "run_forecasts", "run_scenarios", "approve_recommendations", "generate_reports"},
+    "HR Analyst": {"read_dashboards", "create_workforce_plans", "sync_workforce_data"},
+    "HR Approver": {"read_dashboards", "create_workforce_plans", "approve_workforce_plans"},
     "Admin": {"read_dashboards", "run_forecasts", "run_scenarios", "approve_recommendations", "generate_reports", "admin_tools"},
 }
 

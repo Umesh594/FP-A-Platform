@@ -5,8 +5,10 @@ from sqlalchemy.orm import Session
 from app.connectors.salesforce_connector import SalesforceConnector, SalesforceIntegrationError
 from app.connectors.oracle_connector import OracleFinanceConnector, OracleIntegrationError
 from app.connectors.mysql_finance_connector import MySQLFinanceConnector, MySQLIntegrationError
+from app.connectors.workday_connector import WorkdayIntegrationError, WorkdayWorkforceConnector
 from app.dependencies import get_db
 from app.services.reliability import enqueue_outbox_event, run_idempotent
+from app.services.workforce_service import sync_workday_actuals
 
 router = APIRouter(prefix="/integrations", tags=["enterprise-integrations"])
 
@@ -15,6 +17,10 @@ class SalesforceSyncRequest(BaseModel):
     company_id: int = Field(default=1, ge=1)
     include_accounts: bool = True
     include_opportunities: bool = True
+
+
+class WorkdaySyncRequest(BaseModel):
+    company_id: int = Field(default=1, ge=1)
 
 
 @router.get("/salesforce/health")
@@ -69,6 +75,35 @@ def salesforce_pipeline_snapshot(
         idempotency_key=idempotency_key,
         request_payload=request_payload,
         operation=operation,
+    )
+    if result["status"] == "conflict":
+        raise HTTPException(status_code=409, detail=result["message"])
+    return result
+
+
+@router.get("/workday/health")
+def workday_health():
+    try:
+        result = WorkdayWorkforceConnector().test_connection()
+    except WorkdayIntegrationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return result.__dict__
+
+
+@router.post("/workday/workforce")
+def workday_workforce_snapshot(
+    payload: WorkdaySyncRequest,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    db: Session = Depends(get_db),
+):
+    if not idempotency_key:
+        raise HTTPException(status_code=400, detail="Idempotency-Key header is required")
+    result = run_idempotent(
+        db,
+        endpoint="/integrations/workday/workforce",
+        idempotency_key=idempotency_key,
+        request_payload=payload.model_dump(),
+        operation=lambda: sync_workday_actuals(db, payload.company_id),
     )
     if result["status"] == "conflict":
         raise HTTPException(status_code=409, detail=result["message"])

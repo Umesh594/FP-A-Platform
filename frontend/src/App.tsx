@@ -11,6 +11,7 @@ import ReportsExports from "@/pages/ReportsExports";
 import EmailCenter from "@/pages/EmailCenter";
 import AgentIntelligence from "@/pages/AgentIntelligence";
 import AdminRBAC from "@/pages/AdminRBAC";
+import WorkforcePlanning from "@/pages/WorkforcePlanning";
 
 function ThemeInit() {
   const { theme } = useAppStore();
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/emails" element={<EmailCenter />} />
             <Route path="/agents" element={<AgentIntelligence />} />
             <Route path="/admin" element={<AdminRBAC />} />
+            <Route path="/workforce" element={<WorkforcePlanning />} />
           </Routes>
         </AppLayout>
       </SocketProvider>

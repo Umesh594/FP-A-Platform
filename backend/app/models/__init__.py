@@ -29,6 +29,7 @@ from app.models.advanced import (
     ToolAuditLog,
     CapacitySnapshot,
 )
+from app.models.workforce import WorkforceActual, WorkforceApproval, WorkforcePlan
 
 __all__ = [
     "AgentReflection",
@@ -60,4 +61,7 @@ __all__ = [
     "StagingFinancial",
     "ToolAuditLog",
     "CapacitySnapshot",
+    "WorkforceActual",
+    "WorkforceApproval",
+    "WorkforcePlan",
 ]

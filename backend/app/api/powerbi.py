@@ -7,6 +7,8 @@ from app.models.company import Company
 from app.models.financials import FinancialMetric
 from app.models.initiative import Initiative
 from app.models.kpi import KPI
+from app.models.workforce import WorkforceActual, WorkforcePlan
+from app.services.workforce_service import workforce_dataset
 
 router = APIRouter(prefix="/powerbi", tags=["powerbi"])
 
@@ -85,4 +87,25 @@ def data_quality_scorecard(db: Session = Depends(get_db)):
         "missing_ebitda_rows": missing_ebitda,
         "financial_completeness_pct": round(completeness * 100, 2),
         "powerbi_refresh_status": "ready" if completeness >= 0.98 else "review",
+    }
+
+
+@router.get("/workforce-dataset")
+def workforce_powerbi_dataset(company_id: int | None = None, db: Session = Depends(get_db)):
+    """Employee Success semantic rows for headcount, hiring pipeline, and cost-variance dashboards."""
+    return workforce_dataset(db, company_id)
+
+
+@router.get("/workforce-quality-scorecard")
+def workforce_quality_scorecard(db: Session = Depends(get_db)):
+    total_actuals = db.query(WorkforceActual).count()
+    invalid_actuals = db.query(WorkforceActual).filter(WorkforceActual.quality_status != "valid").count()
+    submitted_or_approved = db.query(WorkforcePlan).filter(WorkforcePlan.status.in_(["submitted", "approved"])).count()
+    completeness = round((1 - invalid_actuals / max(total_actuals, 1)) * 100, 2)
+    return {
+        "workforce_actual_rows": total_actuals,
+        "invalid_workforce_rows": invalid_actuals,
+        "approval_queue_size": submitted_or_approved,
+        "workforce_data_completeness_pct": completeness,
+        "powerbi_refresh_status": "ready" if invalid_actuals == 0 else "review",
     }

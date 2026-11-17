@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     SALESFORCE_TIMEOUT_SECONDS: int = 15
     SALESFORCE_MOCK_MODE: bool = True
 
+    # Workday workforce integration. Live mode accepts only aggregated department-month data.
+    WORKDAY_BASE_URL: str = ""
+    WORKDAY_BEARER_TOKEN: str = ""
+    WORKDAY_TIMEOUT_SECONDS: int = 15
+    WORKDAY_MOCK_MODE: bool = True
+
     # Oracle finance integration
     ORACLE_DSN: str = ""
     ORACLE_USERNAME: str = ""

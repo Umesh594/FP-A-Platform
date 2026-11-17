@@ -10,6 +10,7 @@ import {
   Activity,
   BrainCircuit,
   ShieldCheck,
+  UsersRound,
   Wifi,
   WifiOff,
   ChevronLeft,
@@ -56,6 +57,7 @@ export function AppSidebar() {
   { title: "Reports & Exports", url: "/reports", icon: FileText },
   { title: "Agent Intelligence", url: "/agents", icon: BrainCircuit },
   { title: "Admin / RBAC", url: "/admin", icon: ShieldCheck },
+  { title: "Workforce Planning", url: "/workforce", icon: UsersRound },
   { title: "Email Center", url: "/emails", icon: Mail },
 ];
 
